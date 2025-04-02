@@ -2,7 +2,6 @@ Remote Policy Checker for Oslo Policy
 =====================================
 
 .. warning::
-   ⚠️ **Development Status: Early Development** ⚠️
 
    This project is currently in early development phase and is **NOT** ready for production use.
    The codebase is undergoing active development and significant changes may occur.
@@ -21,12 +20,14 @@ allowing policy decisions to be made by a remote service.
 
 Installation
 ------------
+
 .. code-block:: bash
 
    pip install oslo.policy.remote
 
 Configuration
 -------------
+
 Add to your service's configuration file:
 
 .. code-block:: ini
@@ -39,19 +40,22 @@ Add to your service's configuration file:
 
 Policy File Example
 -------------------
+
 .. code-block:: yaml
 
    create_instance: remote:create_instance
    delete_instance: rule:admin_or_owner
 
 Generating Sample Policies
--------------------------
+--------------------------
+
 .. code-block:: bash
 
    oslopolicy-remote-policy-generator --namespace nova > /etc/nova/policy.yaml
 
 Development
 -----------
+
 To set up a development environment:
 
 .. code-block:: bash
@@ -63,4 +67,5 @@ To set up a development environment:
 
 License
 -------
-Apache 2.0 
+
+Apache 2.0
