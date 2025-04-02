@@ -224,12 +224,12 @@ def _format_rule_default_yaml(default, include_help=True, comment_rule=True,
              'text': text}
     elif add_deprecated_rules and default.deprecated_rule:
         deprecated_reason = (
-            default.deprecated_rule.deprecated_reason or
-            default.deprecated_reason
+            default.deprecated_rule.deprecated_reason 
+            or default.deprecated_reason
         )
         deprecated_since = (
-            default.deprecated_rule.deprecated_since or
-            default.deprecated_since
+            default.deprecated_rule.deprecated_since 
+            or default.deprecated_since
         )
 
         # This issues a deprecation warning but aliases the old policy name

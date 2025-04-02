@@ -17,9 +17,6 @@ import contextlib
 import copy
 import os
 import requests
-from requests.exceptions import Timeout
-from urllib3 import PoolManager
-from urllib3.exceptions import MaxRetryError
 from urllib.parse import urljoin
 
 from oslo_policy import _checks
@@ -89,36 +86,10 @@ class RemoteCheck(_checks.Check):
             raise exceptions.RemotePolicyConfigError(
                 "Remote policy server URL is not configured"
             )
+        
+        # Configure SSL if needed
         if enforcer.conf.remote_policy.ssl_verify:
-            cert_file = enforcer.conf.remote_policy.client_crt_file
-            key_file = enforcer.conf.remote_policy.client_key_file
-            ca_crt_file = enforcer.conf.remote_policy.ca_crt_file
-            verify_server = enforcer.conf.remote_policy.verify_server_crt
-            if cert_file:
-                if not os.path.exists(cert_file):
-                    raise RuntimeError(
-                        _("Unable to find ssl cert_file  : %s") % cert_file
-                    )
-                if not os.access(cert_file, os.R_OK):
-                    raise RuntimeError(
-                        _("Unable to access ssl cert_file  : %s") % cert_file
-                    )
-            if key_file:
-                if not os.path.exists(key_file):
-                    raise RuntimeError(_("Unable to find ssl key_file : %s") % key_file)
-                if not os.access(key_file, os.R_OK):
-                    raise RuntimeError(
-                        _("Unable to access ssl key_file  : %s") % key_file
-                    )
-            cert = (cert_file, key_file)
-            if verify_server and ca_crt_file:
-                if not os.path.exists(ca_crt_file):
-                    raise RuntimeError(
-                        _("Unable to find ca cert_file  : %s") % ca_crt_file
-                    )
-                verify_server = ca_crt_file
-            self.request_kwargs["cert"] = cert
-            self.request_kwargs["verify"] = verify_server
+            self._configure_ssl(enforcer.conf.remote_policy)
 
         payload = self._construct_payload(
             self.service, credentials, current_rule, enforcer, target
@@ -127,7 +98,12 @@ class RemoteCheck(_checks.Check):
         try:
             with contextlib.closing(
                 self.session.post(
-                    url=urljoin(enforcer.conf.remote_policy.server_url + "/", self.endpoint), json=payload, **self.request_kwargs,
+                    url=urljoin(
+                        enforcer.conf.remote_policy.server_url + "/", 
+                        self.endpoint
+                    ), 
+                    json=payload, 
+                    **self.request_kwargs,
                 )
             ) as response:
                 response.raise_for_status()
@@ -162,6 +138,43 @@ class RemoteCheck(_checks.Check):
             if CONF.remote_policy.fail_closed:
                 return False
             raise exceptions.RemotePolicyServerError(f"Policy check failed: {str(e)}")
+
+    def _configure_ssl(self, remote_policy_conf):
+        """Configure SSL settings for the request.
+        
+        This method extracts SSL configuration logic from the __call__ method
+        to reduce complexity.
+        """
+        cert_file = remote_policy_conf.client_crt_file
+        key_file = remote_policy_conf.client_key_file
+        ca_crt_file = remote_policy_conf.ca_crt_file
+        verify_server = remote_policy_conf.verify_server_crt
+        
+        if cert_file:
+            if not os.path.exists(cert_file):
+                raise RuntimeError(
+                    _("Unable to find ssl cert_file  : %s") % cert_file
+                )
+            if not os.access(cert_file, os.R_OK):
+                raise RuntimeError(
+                    _("Unable to access ssl cert_file  : %s") % cert_file
+                )
+        if key_file:
+            if not os.path.exists(key_file):
+                raise RuntimeError(_("Unable to find ssl key_file : %s") % key_file)
+            if not os.access(key_file, os.R_OK):
+                raise RuntimeError(
+                    _("Unable to access ssl key_file  : %s") % key_file
+                )
+        cert = (cert_file, key_file)
+        if verify_server and ca_crt_file:
+            if not os.path.exists(ca_crt_file):
+                raise RuntimeError(
+                    _("Unable to find ca cert_file  : %s") % ca_crt_file
+                )
+            verify_server = ca_crt_file
+        self.request_kwargs["cert"] = cert
+        self.request_kwargs["verify"] = verify_server
 
     @property
     def session(self):

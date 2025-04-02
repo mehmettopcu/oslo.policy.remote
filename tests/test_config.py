@@ -29,7 +29,7 @@ def test_default_config_values(conf):
 
 def test_custom_config_values(conf):
     conf.set_override('server_url', 'http://custom-server:8080/check',
-                     group='remote_policy')
+                      group='remote_policy')
     conf.set_override('timeout', 5, group='remote_policy')
     conf.set_override('fail_closed', False, group='remote_policy')
     conf.set_override('ssl_verify', True, group='remote_policy')
