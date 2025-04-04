@@ -25,9 +25,9 @@
             "name": "policy-checker",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/.venv/bin/oslopolicy-remote-checker",
+            "program": "${workspaceFolder}/.venv/bin/oslopolicy-checker",
             "console": "integratedTerminal",
-            "args": ["--access", "sample_data/auth_v3_token_admin.json", "--policy", "policy.yaml", "--enforcer_namespace", "nova","--enforcer_config", "sample_data/remote_policy.conf"],
+            "args": ["--access", "sample_data/auth_v3_token_admin.json", "--policy", "policy.yaml", "--enforcer_config", "sample_data/remote_policy.conf"],
             "justMyCode": false
         },
     ]

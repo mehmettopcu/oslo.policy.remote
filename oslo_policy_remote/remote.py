@@ -119,7 +119,9 @@ class RemoteCheck(_checks.Check):
             exceptions.RemotePolicyServerError,
         ) as e:
             LOG.error(f"Remote policy check failed: {e}")
-
+            if CONF.remote_policy.fail_closed:
+                return False
+            
             # TODO: This is a temporary fallback mechanism that will be improved in future versions.
             # Currently, when remote policy check fails (timeout, connection error, or server error),
             # we fallback to the default rule if it exists. This behavior might change in future releases
@@ -135,8 +137,6 @@ class RemoteCheck(_checks.Check):
                     current_rule=current_rule,
                 )
 
-            if CONF.remote_policy.fail_closed:
-                return False
             raise exceptions.RemotePolicyServerError(f"Policy check failed: {str(e)}")
 
     def _configure_ssl(self, remote_policy_conf):
