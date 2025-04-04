@@ -26,7 +26,7 @@ Installation
 .. code-block:: bash
 
    pip install oslo.policy.remote
-<>
+
 Configuration
 -------------
 

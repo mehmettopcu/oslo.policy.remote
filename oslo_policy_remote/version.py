@@ -13,4 +13,4 @@
 
 import pbr.version
 
-version_info = pbr.version.VersionInfo('oslo.policy')
+version_info = pbr.version.VersionInfo('oslo.policy.remote')
