@@ -16,7 +16,9 @@ Remote Policy Checker for Oslo Policy
    Use at your own risk. For production use, please wait for a stable release.
 
 This package extends Oslo Policy to support remote HTTP-based policy checking,
-allowing policy decisions to be made by a remote service.
+allowing policy decisions to be made by a remote service. It is designed to work
+in conjunction with `goslo.policy.server <https://github.com/mehmettopcu/goslo.policy.server>`_,
+a Go-based policy server that provides centralized policy enforcement for OpenStack services.
 
 Installation
 ------------
@@ -24,7 +26,7 @@ Installation
 .. code-block:: bash
 
    pip install oslo.policy.remote
-
+<>
 Configuration
 -------------
 
